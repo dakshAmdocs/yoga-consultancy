@@ -8,27 +8,37 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Loading from './Loading';
+import './BasicTable.css';
+import axios from "axios";
 
+const BASE_URL = "http://localhost:8080/api/users"
 
 export default function BasicTable() {
 
+  const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-function createData(id, name, age, email) {
-  return { id, name, age, email };
-}
+  useEffect(() => {
+    
+    axios.get(BASE_URL + "/getAllUsers").then(
+      (response)=>{
+        console.log(response)
+        setRows(response.data)
+        setIsLoading(false);
+      }
+    )
+  }, [])
 
-var currId = 3;
-var rows = [{id: 1, name: "Rahul", age: 27, email: "rahul321@gmail.com"}, createData(2, "Aayush", 25, "aayush2255@gmail.com")];  
-//   useEffect(() => {
-//     rows.push(createData(currId, "Rahul", 27, "rahul321@gmail.com"))
-//     currId++;
-// }, [])
+  if(isLoading){
+    return <Loading isLoading = {isLoading}/>
+  }
 
   return (
-    <div>
-      <div>Yoga Consultation Portal</div>
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 300 }} aria-label="simple table">
+    <Stack spacing={2} padding={2}>
+      <div className='heading'><b>Yoga Consultation Portal</b></div>
+    <TableContainer  component={Paper}>
+      <Table sx={{ minWidth: 1000 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>ID</TableCell>
@@ -41,16 +51,16 @@ var rows = [{id: 1, name: "Rahul", age: 27, email: "rahul321@gmail.com"}, create
         <TableBody>
           {rows.map((row) => (
             <TableRow
-              key={row.id}
+              key={row.user_id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">{row.id}</TableCell>
+              <TableCell component="th" scope="row">{row.user_id}</TableCell>
               <TableCell align="center">{row.name}</TableCell>
               <TableCell align="center">{row.age}</TableCell>
               <TableCell align="center">{row.email}</TableCell>
               <TableCell align="center">
-              <Stack spacing={1} direction="row">
-                <Button variant="outlined"  size="small" >View</Button>
+              <Stack spacing={1} direction="row" justifyContent="center">
+                <Button variant="outlined"  size="small">View</Button>
                 <Button variant="contained" size="small">Edit</Button>
                 <Button variant="contained" size="small" color="error">Delete</Button>
               </Stack>
@@ -60,6 +70,6 @@ var rows = [{id: 1, name: "Rahul", age: 27, email: "rahul321@gmail.com"}, create
         </TableBody>
       </Table>
     </TableContainer>
-    </div>
+    </Stack>
   );
 }
